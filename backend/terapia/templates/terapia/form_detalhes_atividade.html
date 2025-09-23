@@ -1,0 +1,6 @@
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">Salvar</button>
+  <a href="{% url 'registrar_atividades_sessao' atividade.sessao.id %}" class="btn btn-secondary ms-2">Cancelar</a>
+</form>

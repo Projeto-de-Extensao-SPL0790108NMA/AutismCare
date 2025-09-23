@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Adicionar Atividade</h2>
+
+{% if atividade_modelo %}
+  <p>Atividade: <strong>{{ atividade_modelo.descricao }}</strong></p>
+{% endif %}
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Salvar</button>
+</form>
+
+<a href="{% url 'detalhes_sessao' sessao.id %}">Voltar</a>
+
+{% endblock %}

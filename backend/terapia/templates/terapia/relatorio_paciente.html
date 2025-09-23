@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+
+  <h2 class="mb-4 text-center">Relatório do Paciente: {{ paciente.nome }}</h2>
+
+  <!-- Filtro por data -->
+  <form method="get" class="row g-3 mb-4">
+    <div class="col-md-5">
+      <label for="data_inicio" class="form-label">Data Início</label>
+      <input type="date" name="data_inicio" id="data_inicio" value="{{ data_inicio }}" class="form-control">
+    </div>
+    <div class="col-md-5">
+      <label for="data_fim" class="form-label">Data Fim</label>
+      <input type="date" name="data_fim" id="data_fim" value="{{ data_fim }}" class="form-control">
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+      <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+    </div>
+  </form>
+
+  <!-- Gráfico de barras -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5>Resumo por Atividade</h5>
+      <canvas id="graficoAtividades" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- Gráfico de linha -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5>Evolução ao longo do tempo</h5>
+      <canvas id="graficoEvolucao" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- Histórico detalhado -->
+  <div class="card">
+    <div class="card-body">
+      <h5>Histórico Detalhado</h5>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Atividade</th>
+            <th>Resposta</th>
+            <th>Detalhes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for registro in historico %}
+            <tr>
+              <td>{{ registro.data_registro|date:"d/m/Y H:i" }}</td>
+              <td>{{ registro.atividade_modelo.descricao }}</td>
+              <td>
+                {% if registro.resposta == 'positiva' %}
+                  <span class="badge bg-success">Positiva</span>
+                {% else %}
+                  <span class="badge bg-danger">Negativa</span>
+                {% endif %}
+              </td>
+              <td>{{ registro.detalhes|default:"-" }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="4" class="text-center">Nenhum registro encontrado.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  // Gráfico de barras - Resumo por Atividade
+  const ctx1 = document.getElementById('graficoAtividades').getContext('2d');
+  new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels: {{ atividades_labels|safe }},
+      datasets: [
+        {
+          label: 'Positivas',
+          data: {{ positivas|safe }},
+          backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        },
+        {
+          label: 'Negativas',
+          data: {{ negativas|safe }},
+          backgroundColor: 'rgba(255, 99, 132, 0.6)',
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top' }
+      }
+    }
+  });
+
+  // Gráfico de linha - Evolução diária
+  const ctx2 = document.getElementById('graficoEvolucao').getContext('2d');
+  new Chart(ctx2, {
+    type: 'line',
+    data: {
+      labels: {{ dias_labels|safe }},
+      datasets: [
+        {
+          label: 'Positivas',
+          data: {{ positivos_dia|safe }},
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          fill: true,
+          tension: 0.3
+        },
+        {
+          label: 'Negativas',
+          data: {{ negativos_dia|safe }},
+          borderColor: 'rgba(255, 99, 132, 1)',
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          fill: true,
+          tension: 0.3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top' }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { precision: 0 }
+        }
+      }
+    }
+  });
+</script>
+
+{% endblock %}

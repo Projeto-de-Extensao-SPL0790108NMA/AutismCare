@@ -1,13 +1,22 @@
-{% extends "base.html" %}
-
-{% block content %}
-  <h2>Atividades</h2>
-  <a href="{% url 'criar_atividade' %}">➕ Adicionar Atividade</a>
-  <ul>
-    {% for atividade in atividades %}
-      <li>{{ atividade.descricao }} ({{ atividade.resposta }})</li>
-    {% empty %}
-      <li>Nenhuma atividade registrada.</li>
-    {% endfor %}
-  </ul>
-{% endblock %}
+<ul class="list-group mt-3">
+  {% for atividade in atividades %}
+    <li class="list-group-item
+               {% if atividade.resposta == 'positiva' %}list-group-item-success
+               {% elif atividade.resposta == 'negativa' %}list-group-item-danger
+               {% endif %}">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <strong>{{ atividade.data_registro|date:"H:i:s" }}</strong>
+          — {{ atividade.atividade_modelo.descricao }}
+          {% if atividade.detalhes %}
+            <div class="small text-muted">{{ atividade.detalhes }}</div>
+          {% endif %}
+          <div class="small"><em>{{ atividade.get_resposta_display }}</em></div>
+        </div>
+        <a href="{% url 'registrar_detalhes_atividade' atividade.id %}" class="btn btn-sm btn-outline-primary">Editar</a>
+      </div>
+    </li>
+  {% empty %}
+    <li class="list-group-item">Nenhuma atividade adicionada ainda.</li>
+  {% endfor %}
+</ul>

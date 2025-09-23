@@ -13,17 +13,11 @@
       {% for sessao in sessoes %}
         <tr>
           <td>{{ sessao.data_inicio|date:"d/m/Y H:i" }}</td>
+          <td>{% if sessao.encerrada %}Encerrada{% else %}Em andamento{% endif %}</td>
           <td>
+            <a href="{% url 'registrar_atividades_sessao' sessao.id %}">Ver Atividades</a> |
             {% if sessao.encerrada %}
-              Encerrada
-            {% else %}
-              Em andamento
-            {% endif %}
-          </td>
-          <td>
-            <a href="{% url 'lista_atividades_modelo' sessao.id %}">Ver Atividades</a> |
-            {% if sessao.encerrada %}
-              <a href="#">Ver Relatório</a>
+              <a href="{% url 'relatorio_sessao' sessao.id %}">Ver Relatório</a>
             {% else %}
               <a href="{% url 'encerrar_sessao' sessao.id %}">Encerrar</a>
             {% endif %}
