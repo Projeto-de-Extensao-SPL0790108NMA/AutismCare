@@ -36,7 +36,7 @@ O projeto adota uma estrutura modular, com a divisão entre o backend (Django) e
 
 ```bash
 # 1. Clonar o repositório
-git clone https://github.com/seuusuario/AppABA.git
+git clone https://github.com/AutismCare/ABA-PROJECT.git
 cd AppABA/backend
 
 # 2. Criar ambiente virtual
